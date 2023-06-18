@@ -1,0 +1,19 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: "Coco";
+  src: url("../src/assets/fonts/CocoBiker\ Regular\ Trial.ttf");
+}
+@font-face {
+  font-family: "Gears";
+  src: url("../src/assets/fonts/GearsOfPeace.ttf");
+}
+
+img {
+  margin: auto;
+}
+a {
+  color: rgb(20, 184, 166);
+}
