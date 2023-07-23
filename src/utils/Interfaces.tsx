@@ -33,6 +33,8 @@ interface Post {
   has_permission: boolean;
   comments: Comment[];
   description: string;
+  tags: string;
+  image: string;
 }
 
 interface PostWithoutComments {
@@ -45,6 +47,8 @@ interface PostWithoutComments {
   author: User;
   has_permission: boolean;
   description: string;
+  tags: string;
+  image: string;
 }
 
 interface RudimentaryPost {
@@ -61,4 +65,29 @@ interface ServerError {
 
 interface AuthSuccess {
   token: string;
+}
+
+interface ServerToClientEvents {
+  connected: (msg: string) => void;
+}
+
+interface ClientToServerEvents {
+  ok: (msg: string) => void;
+}
+interface Short {
+  id: number;
+  title: string;
+  content: string;
+  author: User;
+  created_at: string;
+  updated_at: string;
+  has_permission: boolean;
+}
+
+interface ServerToClientEvents {
+  connected: (msg: string) => void;
+}
+
+interface ClientToServerEvents {
+  ok: (msg: string) => void;
 }

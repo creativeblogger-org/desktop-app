@@ -19,12 +19,33 @@ function getToken() {
   return "";
 }
 
+function getShortCookie() {
+  let cookies = document.cookie;
+  let token = cookies.split("; ").find((e) => e.startsWith("shorts"));
+  if (token == undefined) {
+    return "";
+  }
+  token = token.substring(6);
+  if (token != undefined) {
+    return token;
+  }
+  return "";
+}
+
 function isConnected() {
   return getToken().length != 0;
 }
 
 function isNotConnected() {
   return getToken().length === 0;
+}
+
+function isAcceptShortConditions() {
+  return getShortCookie().length != 0;
+}
+
+function isNotAcceptShortConditions() {
+  return getShortCookie().length === 0;
 }
 
 function getCookie(name: any) {
@@ -94,6 +115,8 @@ function findPermissions(permission: number) {
     return "membre";
   } else if (permission === 1) {
     return "rédacteur";
+  } else if (permission === 2) {
+    return "modérateur";
   } else {
     return "admin";
   }
@@ -112,4 +135,7 @@ export {
   success,
   getCookie,
   findPermissions,
+  getShortCookie,
+  isAcceptShortConditions,
+  isNotAcceptShortConditions,
 };

@@ -10,10 +10,60 @@
   font-family: "Gears";
   src: url("../src/assets/fonts/GearsOfPeace.ttf");
 }
+@font-face {
+  font-family: "Garamond";
+  src: url("../src/assets/fonts/EBGaramond-VariableFont_wght.ttf");
+}
+@font-face {
+  font-family: "Pangolin";
+  src: url("../src/assets/fonts/Pangolin-Regular.ttf");
+}
 
 img {
   margin: auto;
+  margin-top: 10px;
+  margin-bottom: 10px;
 }
+
+@media only screen and (max-width: 900px) {
+  .home {
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+  }
+}
+
 a {
   color: rgb(20, 184, 166);
+}
+hr {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+.root {
+  height: calc(100%);
+}
+
+/* @media (prefers-color-scheme: dark) {
+  .root {
+    background-color: rgb(42, 53, 68);
+    color: white;
+  }
+} */
+
+.title-post:hover {
+  animation: 2s anim-flipX ease infinite;
+}
+@keyframes anim-flipX {
+  0% {
+    opacity: 0;
+    transform: rotateX(90def);
+  }
+  50% {
+    opacity: 1;
+    transform: rotateX(720deg);
+  }
+  100% {
+    /* animate nothing to pause animation at the end */
+    opacity: 1;
+    transform: rotateX(720deg);
+  }
 }

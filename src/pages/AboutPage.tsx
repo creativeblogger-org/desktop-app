@@ -14,7 +14,7 @@ const AboutPage: Component = () => {
           content="Creative Blogger - Projet collaboratif entre bloggers"
         />
       </div>
-      <div class="grid grid-cols-2 m-6">
+      <div class="grid grid-cols-1 sm:grid-cols-2 m-6">
         <div class="m-3">
           <img
             src={gifRiccardo}
@@ -28,8 +28,8 @@ const AboutPage: Component = () => {
           <hr />
           <p class="text-center">
             S'occupe de la liaison entre le front et l'API, adore le langage V
-            et Rust, plutôt de nature calme,il a fait partir Micorksen ( ouf )
-            c'était incroyable et on raconte ça sur notre site ! ☮️
+            et Rust, plutôt de nature calme, il est le pilier qui maintient CB
+            en place ☮️
           </p>
         </div>
         <div class="m-3">
@@ -55,9 +55,12 @@ const AboutPage: Component = () => {
           Et voilà la fine équipe !{" "}
         </h1>
       </div>
-      <NavLink href="/micorksen" class="fixed text-xs left-0 bottom-0">
-        Ps : bisous Micorksen ! Force à toi dans tes projets
-      </NavLink>
+      <a
+        href="/become"
+        class="flex mx-auto mt-7 mb-7 w-1/3 sm:w-1/2 md:w-1/6  duration-200 hover:rounded-2xl justify-center rounded-md shadow-indigo-500/50 bg-gradient-to-l from-indigo-500 to-teal-500 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+      >
+        Nous rejoindre !
+      </a>
     </MetaProvider>
   );
 };

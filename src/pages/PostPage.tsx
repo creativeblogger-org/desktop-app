@@ -13,7 +13,7 @@ const fetch_post_by_slug = async () => {
     `https://api.creativeblogger.org${location.pathname}`
   );
 
-  if (res.status == 404) {
+  if (res.status === 404) {
     location.assign("/404");
   }
 
@@ -51,7 +51,7 @@ const PostPage: Component = () => {
       <MetaProvider>
         <Title>{post().title} - Creative Blogger</Title>
         <Meta name="description" content={post().description} />
-        <PostComponent post={post()} comments={comments()} />;
+        <PostComponent post={post()} comments={comments()} />
       </MetaProvider>
       {/* </Show> */}
     </div>

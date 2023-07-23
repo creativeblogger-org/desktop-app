@@ -1,4 +1,4 @@
-import { For, Show, createEffect, createSignal } from "solid-js";
+import { For, Show, createEffect, createSignal, onMount } from "solid-js";
 import { NavLink } from "@solidjs/router";
 import {
   customFetch,
@@ -6,15 +6,63 @@ import {
   displaySuccess,
   getError,
   getHumanDate,
+  isConnected,
 } from "../utils/functions_utils";
 import EditIcon from "../assets/button_icons/edit.svg";
 import CancelEditIcon from "../assets/button_icons/x-circle.svg";
 import DeleteIcon from "../assets/button_icons/trash.svg";
 import SaveIcon from "../assets/button_icons/save.svg";
+import ShortIcon from "../assets/img/short-logo.png";
 import { fetch_post_by_slug } from "../pages/PostPage";
 import SendIcon from "../assets/button_icons/send.svg";
 import CommentComponent from "./CommentComponent";
-import { Marked } from "@ts-stack/markdown";
+import { fetch_shorts } from "../pages/ShortsPage";
+
+function convertMarkdownToHtml(markdown: string) {
+  if (markdown !== undefined && markdown !== null) {
+    return (
+      markdown
+        .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+        .replace(/\*(.+?)\*/g, "<em>$1</em>")
+        .replace(
+          /`(.+?)`/g,
+          "<p class='bg-slate-800 p-4 m-5 rounded-md text-white'>$1</p>"
+        )
+        .replace(/!\[(.*?)\]\((.*?)\)/g, "<img alt='$1' src='$2'>")
+        .replace(/\---/g, "<hr />")
+        .replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2">$1</a>')
+        .replace(/\n/g, "<br />")
+        // .replace(/\$\$(.*?)\$\$/g, '<span class="text-teal-500">$1</span>')
+        // .replace(/\$(.*?)\$/g, '<span class="text-indigo-500">$1</span>')
+        .replace(/\$red\$(.*?)\$red\$/g, '<span style="color: red;">$1</span>')
+        .replace(
+          /\$blue\$(.*?)\$blue\$/g,
+          '<span style="color: blue;">$1</span>'
+        )
+        .replace(
+          /\$green\$(.*?)\$green\$/g,
+          '<span style="color: green;">$1</span>'
+        )
+        .replace(/\^(.+?)\^/g, "<div>$1</div>")
+        .replace(
+          /\&(.*?)\&(.*?)\&(.*?)&/g,
+          "<div class='grid grid-cols-$1'>$2</div>"
+        )
+        .replace(/^- (.*)$/gm, "<ul class='list-disc'><li>$1</li></ul>")
+        .replace(/^# (.*)$/gm, "<h1 class='text-6xl'>$1</h1>")
+        .replace(/^## (.*)$/gm, "<h2 class='text-5xl'>$1</h2>")
+        .replace(/^### (.*)$/gm, "<h3 class='text-4xl'>$1</h3>")
+        .replace(/^#### (.*)$/gm, "<h4 class='text-3xl'>$1</h4>")
+        .replace(/^##### (.*)$/gm, "<h5 class='text-2xl'>$1</h5>")
+        .replace(/^###### (.*)$/gm, "<h6 class='text-xl'>$1</h6>")
+        .replace(/\|(.*?)\|/g, "<div class='flex justify-center'>$1</div>")
+        .replace(
+          /\[!\[\]\((.*?)\)\]\((.*?)\)/g,
+          '<div><a href="$2"><img src="$1" alt="YouTube Video"></a></div><div>YouTube Video: <a href="$2">$2</a></div>'
+        )
+    );
+  }
+}
 
 const [editing, setEditing] = createSignal(false);
 
@@ -85,14 +133,46 @@ const PostComponent = (props: {
     }
   });
 
-  createEffect(() => {});
+  async function postShort() {
+    const title = props.post.title;
+    const desc =
+      props.post.description +
+      `<br /> [Découvrez l'article !](https://creativeblogger.org/posts/${props.post.slug})`;
+
+    const res = await customFetch(
+      "https://api.creativeblogger.org/shorts",
+      "POST",
+      JSON.stringify({
+        title: title,
+        content: desc,
+      })
+    );
+
+    if (!res.ok) {
+      displayError(getError(await res.json()));
+      return;
+    }
+
+    displaySuccess("Short publié avec succès !");
+    location.assign("/shorts");
+    fetch_shorts();
+  }
 
   return (
-    <div>
+    <div class="flex">
       <div class="p-4 m-5 relative">
-        <h1 class="text-4xl font-bold text-center">{props.post.title}</h1>
+        <h1 class="text-4xl font-bold text-center font-pangolin">
+          {props.post.title}
+        </h1>
+        <Show when={isConnected() === true}>
+          <div class="absolute top-20 left-0 p-2 flex gap-2 sm:top-0">
+            <button onclick={() => postShort()}>
+              <img src={ShortIcon} alt="Short Blog icon" class="h-8 sm:h-10" />
+            </button>
+          </div>
+        </Show>
         <Show when={props.post.has_permission}>
-          <div class="absolute top-0 right-0 p-2 flex gap-2">
+          <div class="absolute top-0 right-0 p-2 flex gap-2 invisible sm:visible">
             <button onclick={() => setEditing((edit) => !edit)}>
               <img src={editIcon()} alt="Edit icon" />
             </button>
@@ -109,7 +189,7 @@ const PostComponent = (props: {
         <div class="flex justify-center m-2">
           <NavLink
             href={"/users/" + props.post.author.username}
-            class="font-bold duration-150 hover:text-indigo-800 hover:underline"
+            class="font-bold text-xl duration-150 font-garamond hover:text-indigo-800 hover:underline"
           >
             @{props.post.author.username}
           </NavLink>
@@ -117,19 +197,19 @@ const PostComponent = (props: {
         <div class="flex justify-center">
           <span>Créé le {getHumanDate(props.post.created_at)}</span>
         </div>
-        <div class="flex justify-center mb-5">
+        <div class="flex justify-center mb-4">
           <Show when={props.post.created_at != props.post.updated_at}>
             <span>Mis à jour le {getHumanDate(props.post.updated_at)}</span>
           </Show>
         </div>
         <hr />
         <div
-          class="post-content text-xl break-words w-2/3 border rounded-md p-8 mx-auto m-3"
+          class="post-content text-lg md:text-xl break-words w-full md:w-2/3 border rounded-md p-8 mx-auto m-3"
           contentEditable={editing()}
           innerHTML={
             !editing()
-              ? Marked.parse(props.post.content)
-              : `${props.post.content}`
+              ? convertMarkdownToHtml(props.post.content)
+              : props.post.content
           }
         ></div>
         <Show when={editing()}>
@@ -147,9 +227,9 @@ const PostComponent = (props: {
             </button>
           </div>
         </Show>
-        <div class="m-auto w-5/6">
+        <div class="m-auto w-full md:w-2/3">
           {/* Way to get number of posts will be modified in the v2 of the API */}
-          <h1 class="text-xl font-bold">
+          <h1 class="text-xl mt-8 font-bold">
             Commentaires ({props.comments.length})
           </h1>
           <form
@@ -167,7 +247,7 @@ const PostComponent = (props: {
               type="text"
               name="comment-content"
               id="comment-content"
-              class="rounded-md p-2 m-2 w-1/3"
+              class="rounded-md p-2 m-2 w-1/3 dark:bg-slate-800 dark:text-white dark:placeholder:text-gray-500 dark:placeholder:opacity-100"
               placeholder="Ajoutez un commentaire..."
             />
             <button type="submit">
@@ -187,3 +267,4 @@ const PostComponent = (props: {
 };
 
 export default PostComponent;
+export { convertMarkdownToHtml };
